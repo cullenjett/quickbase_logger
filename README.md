@@ -1,6 +1,6 @@
 # QuickbaseLogger
 
-TODO: Write a gem description
+"QuickbaseLogger offers a configurable way to use the Intuit QuickBase platform as a way to log Ruby script information."
 
 ## Installation
 
