@@ -1,0 +1,1 @@
+require 'quickbase_logger'
