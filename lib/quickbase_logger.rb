@@ -1,5 +1,9 @@
+require "quickbase_record"
 require "quickbase_logger/version"
+require "quickbase_logger/logger"
 
 module QuickbaseLogger
-  # Your code goes here...
+  def self.configure(&block)
+    QuickbaseRecord.configure(&block)
+  end
 end

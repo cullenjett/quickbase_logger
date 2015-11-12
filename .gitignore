@@ -6,9 +6,11 @@
 /doc/
 /pkg/
 /spec/reports/
+/spec/config.yml
 /tmp/
 *.bundle
 *.so
 *.o
 *.a
 mkmf.log
+*.DS_Store
