@@ -12,6 +12,7 @@ module QuickbaseLogger
 
       file_name = options.fetch(:file_name, 'quickbase_logger_default')
       @text_logger = ::Logger.new("#{formatted_logger_path}#{file_name}.log", "monthly") # standard ruby Logger instance
+      @text_logger.info("START")
       super
     end
 
@@ -51,10 +52,11 @@ module QuickbaseLogger
 
     def log_failure_to_text_file(err)
       joined_logs = self.log.join("\n")
-      text_logger.info("logs:\n#{joined_logs}")
+      text_logger.info("LOGS:\n#{joined_logs}")
 
       text_logger.error("ERROR: #{err}")
       text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
+      text_logger.info("END")
     end
 
     def log_success_to_quickbase
