@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = QuickbaseLogger::VERSION
   spec.authors       = ["Cullen Jett"]
   spec.email         = ["cullenjett@gmail.com"]
-  spec.summary       = "Quickbase tables as a logging platform"
+  spec.summary       = "Use Quickbase tables as a logging platform"
   spec.description   = "QuickbaseLogger offers a configurable way to use the Intuit QuickBase platform as a way to log Ruby script information."
   spec.homepage      = "https://github.com/cullenjett/quickbase_logger"
   spec.license       = "MIT"
