@@ -5,7 +5,6 @@ module QuickbaseLogger
     include QuickbaseRecord::Model
 
     attr_accessor :text_logger
-    LOGGER_PATH = "/log"
 
     def initialize(options={})
       raise ArgumentError.new("QuickbaseLogger::Logger.new must receive a :related_script argument.") unless options[:related_script]
@@ -90,7 +89,8 @@ module QuickbaseLogger
     end
 
     def formatted_logger_path
-      LOGGER_PATH[-1] =~ /\// ? LOGGER_PATH : "#{LOGGER_PATH}/"
+      path = QuickbaseLogger.configuration.logger_path
+      path[-1] =~ /\// ? path : "#{path}/"
     end
   end
 end
