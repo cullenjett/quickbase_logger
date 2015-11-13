@@ -33,6 +33,8 @@ RSpec.describe QuickbaseLogger::Logger do
 
       qb_logger.log_to_quickbase do
         qb_logger.info('Hello, world!')
+        qb_logger.warn('Danger ahead...')
+        qb_logger.error('OH NO!!!')
       end
     end
   end

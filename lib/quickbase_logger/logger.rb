@@ -12,7 +12,6 @@ module QuickbaseLogger
 
       file_name = options.fetch(:file_name, 'quickbase_logger_default')
       @text_logger = ::Logger.new("#{formatted_logger_path}#{file_name}.log", "monthly") # standard ruby Logger instance
-      @text_logger.info("START")
       super
     end
 
@@ -55,7 +54,7 @@ module QuickbaseLogger
       text_logger.info("logs:\n#{joined_logs}")
 
       text_logger.error("ERROR: #{err}")
-      text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 7).join("\n\t")}")
+      text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
     end
 
     def log_success_to_quickbase
@@ -63,7 +62,14 @@ module QuickbaseLogger
       self.end = "#{formatted_date} #{formatted_time}"
       self.log = self.log.join("\n")
 
-      save
+      begin
+        save
+      rescue StandardError => err
+        text_logger.error("-- COULD NOT WRITE SUCCESS TO QUICKBASE --")
+        text_logger.error(err)
+        text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
+        raise err
+      end
     end
 
     def log_failure_to_quickbase(err)
@@ -74,7 +80,14 @@ module QuickbaseLogger
       self.log << "\nERROR: #{err} \n"
       self.log << "BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}"
 
-      save
+      begin
+        save
+      rescue StandardError => err
+        text_logger.error("-- COULD NOT WRITE FAILURE TO QUICKBASE --")
+        text_logger.error(err)
+        text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
+        raise err
+      end
     end
 
     def formatted_date
