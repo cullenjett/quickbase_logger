@@ -86,7 +86,7 @@ module QuickbaseLogger
     end
 
     def formatted_logger_path
-      path = QuickbaseLogger.configuration.logger_path
+      path = QuickbaseLogger.configuration.logger_path || "/log"
       path[-1] =~ /\// ? path : "#{path}/"
     end
   end
