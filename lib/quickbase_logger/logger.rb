@@ -74,7 +74,7 @@ module QuickbaseLogger
 
     def log_failure_to_quickbase(err)
       self.end = "#{formatted_date} #{formatted_time}"
-      self.status = "Fail"
+      self.status = "Failure"
 
       self.log = self.log.join("\n")
       self.log << "\nERROR: #{err} \n"
