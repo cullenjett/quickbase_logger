@@ -1,5 +1,3 @@
-require 'quickbase_record'
-
 module QuickbaseLogger
   class Logger
     include QuickbaseRecord::Model
@@ -9,12 +7,11 @@ module QuickbaseLogger
     def initialize(options={})
       raise ArgumentError.new("QuickbaseLogger::Logger.new must receive a :related_script argument.") unless options[:related_script]
 
-      @related_script = options[:related_script]
       @log = []
       @start = "#{formatted_date} #{formatted_time}"
 
       file_name = options.fetch(:file_name, 'quickbase_logger_default')
-      @text_logger = ::Logger.new("#{formatted_logger_path}#{file_name}.log", "monthly") # standard Ruby Logger instance
+      @text_logger = ::Logger.new("#{formatted_logger_path}#{file_name}.log", "monthly") # standard ruby Logger instance
       @text_logger.info("START")
       super
     end

@@ -16,6 +16,7 @@ RSpec.describe QuickbaseLogger do
   end
 end
 
+
 RSpec.describe QuickbaseLogger::Logger do
   describe '.initialize' do
     it "defines a parent script that all log records will be related to" do
