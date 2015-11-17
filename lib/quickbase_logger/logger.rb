@@ -48,6 +48,7 @@ module QuickbaseLogger
       joined_logs = self.log.join("\n")
       text_logger.info("LOGS:\n#{joined_logs}")
       text_logger.info("END")
+      text_logger.info("")
     end
 
     def log_failure_to_text_file(err)
@@ -57,6 +58,7 @@ module QuickbaseLogger
       text_logger.error("ERROR: #{err}")
       text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
       text_logger.info("END")
+      text_logger.info("")
     end
 
     def log_success_to_quickbase
