@@ -19,9 +19,16 @@ end
 
 RSpec.describe QuickbaseLogger::Logger do
   describe '.initialize' do
+    before do
+      @logger = QuickbaseLogger::Logger.new(related_script: 123)
+    end
+
     it "defines a parent script that all log records will be related to" do
-      logger = QuickbaseLogger::Logger.new(related_script: 123)
-      expect(logger.related_script).to eq(123)
+      expect(@logger.related_script).to eq(123)
+    end
+
+    it "sets a default purge_frequency of 180 days" do
+      expect(@logger.purge_frequency).to eq(180)
     end
   end
 
@@ -32,9 +39,18 @@ RSpec.describe QuickbaseLogger::Logger do
       expect(qb_logger).to receive(:save)
 
       qb_logger.log_to_quickbase do
-        qb_logger.info('Hello, world!')
-        qb_logger.warn('Danger ahead...')
-        qb_logger.error('OH NO!!!')
+        qb_logger.info('testing that #save is called')
+      end
+    end
+
+    it "deletes records older than the purge frequency" do
+      qb_logger = QuickbaseLogger::Logger.new(related_script: 1, purge_frequency: 0)
+      purge_date = Date.today.strftime("%m/%d/%Y")
+
+      expect_any_instance_of(AdvantageQuickbase::API).to receive(:purge_records).with('bkd86zn87', {query: "{1.OBF.#{purge_date}}"})
+
+      qb_logger.log_to_quickbase do
+        qb_logger.info('testing that #purge_records is called')
       end
     end
   end
