@@ -47,7 +47,8 @@ RSpec.describe QuickbaseLogger::Logger do
       qb_logger = QuickbaseLogger::Logger.new(related_script: 1, purge_frequency: 0)
       purge_date = Date.today.strftime("%m/%d/%Y")
 
-      expect_any_instance_of(AdvantageQuickbase::API).to receive(:purge_records).with('bkd86zn87', {query: "{1.OBF.#{purge_date}}"})
+      # the query "{10.EX.1}AND{1.OBF.#{purge_date}}" uses the FID for related_script and date_created, respectively
+      expect_any_instance_of(AdvantageQuickbase::API).to receive(:purge_records).with('bkd86zn87', {query: "{10.EX.1}AND{1.OBF.#{purge_date}}"})
 
       qb_logger.log_to_quickbase do
         qb_logger.info('testing that #purge_records is called')

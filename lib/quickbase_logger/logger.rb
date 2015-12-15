@@ -50,9 +50,10 @@ module QuickbaseLogger
     def purge_logs
       purge_date = Date.today - purge_frequency.days
       purge_date = purge_date.strftime("%m/%d/%Y")
+      related_script_fid = self.class.fields[:related_script].fid
 
       begin
-        qb_client.purge_records(self.class.dbid, {query: "{1.OBF.#{purge_date}}"})
+        qb_client.purge_records(self.class.dbid, {query: "{#{related_script_fid}.EX.#{related_script}}AND{1.OBF.#{purge_date}}"})
       rescue StandardError => e
         text_logger.error("--- FAILED TO PURGE OLD RECORDS ---")
         text_logger.error(err)
