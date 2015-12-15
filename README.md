@@ -70,12 +70,23 @@ QuickbaseLogger is built on top of the wonderful [QuickbaseRecord](https://githu
 ### Methods and API
 Using QuickbaseLogger is as simple as instantiating an instance of QuickbaseLogger::Logger and wrapping any code you want logged to your Script Logs QuickBase table in the #log_to_quickbase method on that instance.
 
+##### Text Logger File Name
 QuickbaseLogger::Logger.new accepts a :related_script argument that is the [Record ID#] of the parent Script record, and an optional :file_name argument for the name of the text log file. If no :file_name argument is given it will default to "quickbase_logger_default"
 
 ```ruby
   qb_logger = QuickbaseLogger::Logger.new(related_script: 123, file_name: 'my_awesome_log_file')
 ```
 
+##### Purge Old Logs
+By default, the Script Log records in QuickBase that are related to the current QuickbaseLogger::Logger instance will be deleted after 180 days. To override this functionality you can add a :purge_frequency argument to the .new method. This should be an integer value representing the number of days after which to delete records (based on the [Date Created] field in QuickBase).
+
+```ruby
+  # "purge_frequency: 7" means that Script Log records created before 7 days ago will be deleted at the end of the #log_to_quickbase method execution
+  qb_logger = QuickbaseLogger::Logger.new(related_script: 123, file_name: 'my_awesome_log_file', purge_frequency: 7)
+```
+
+
+##### #log_to_quickbase
 The instance returned from QuickbaseLogger::Logger.new has a method named #log_to_quickbase that accepts a block of code you want to capture in you logs. While inside the scope of the #log_to_quickbase method, you have access to #info(message), #warn(message), and #error(message) methods on the logger instance that simply log the given message to the :log field on the Script Logs table in QuickBase as well as the text logger. Each of these methods will capture the time of the log automatically.
 
 ```ruby
@@ -109,7 +120,7 @@ class SomeAwesomeScript
 end
 ```
 
-Here's how the #log_to_quickbase method is structured (for your reference):
+Here's how the source code for the #log_to_quickbase method is structured (for your reference):
 
 ```ruby
   def log_to_quickbase

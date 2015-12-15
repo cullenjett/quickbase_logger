@@ -2,18 +2,21 @@ module QuickbaseLogger
   class Logger
     include QuickbaseRecord::Model
 
-    attr_accessor :text_logger
+    attr_accessor :text_logger, :purge_frequency
 
     def initialize(options={})
       raise ArgumentError.new("QuickbaseLogger::Logger.new must receive a :related_script argument.") unless options[:related_script]
 
       @log = []
       @start = "#{formatted_date} #{formatted_time}"
+      @purge_frequency = options.fetch(:purge_frequency, 180)
 
       file_name = options.fetch(:file_name, 'quickbase_logger_default')
       @text_logger = ::Logger.new("#{formatted_logger_path}#{file_name}.log", "monthly") # standard ruby Logger instance
+      @text_logger.info("===== #{Date.today.strftime('%m/%d/%Y')} =====")
       @text_logger.info("START")
-      super
+
+      super(options)
     end
 
     def log_to_quickbase
@@ -28,6 +31,8 @@ module QuickbaseLogger
         log_failure_to_quickbase(err)
         raise err
       end
+
+      purge_logs
     end
 
     def info(message)
@@ -42,17 +47,32 @@ module QuickbaseLogger
       log << "Error [#{formatted_time}]: #{message}"
     end
 
+    def purge_logs
+      purge_date = Date.today - purge_frequency.days
+      purge_date = purge_date.strftime("%m/%d/%Y")
+      related_script_fid = self.class.fields[:related_script].fid
+
+      begin
+        qb_client.purge_records(self.class.dbid, {query: "{#{related_script_fid}.EX.#{related_script}}AND{1.OBF.#{purge_date}}"})
+      rescue StandardError => e
+        text_logger.error("--- FAILED TO PURGE OLD RECORDS ---")
+        text_logger.error(err)
+        text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
+        raise err
+      end
+    end
+
     private
 
     def log_success_to_text_file
-      joined_logs = self.log.join("\n")
-      text_logger.info("LOGS:\n#{joined_logs}")
+      joined_logs = self.log.join("\n\t")
+      text_logger.info("LOGS:\n\t#{joined_logs}")
       text_logger.info("END")
     end
 
     def log_failure_to_text_file(err)
-      joined_logs = self.log.join("\n")
-      text_logger.info("LOGS:\n#{joined_logs}")
+      joined_logs = self.log.join("\n\t")
+      text_logger.info("LOGS:\n\t#{joined_logs}")
 
       text_logger.error("ERROR: #{err}")
       text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
@@ -67,7 +87,7 @@ module QuickbaseLogger
       begin
         save
       rescue StandardError => err
-        text_logger.error("-- COULD NOT WRITE SUCCESS TO QUICKBASE --")
+        text_logger.error("--- COULD NOT WRITE SUCCESS TO QUICKBASE ---")
         text_logger.error(err)
         text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
         raise err
@@ -85,7 +105,7 @@ module QuickbaseLogger
       begin
         save
       rescue StandardError => err
-        text_logger.error("-- COULD NOT WRITE FAILURE TO QUICKBASE --")
+        text_logger.error("--- COULD NOT WRITE FAILURE TO QUICKBASE ---")
         text_logger.error(err)
         text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
         raise err
