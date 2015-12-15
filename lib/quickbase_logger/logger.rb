@@ -51,7 +51,14 @@ module QuickbaseLogger
       purge_date = Date.today - purge_frequency.days
       purge_date = purge_date.strftime("%m/%d/%Y")
 
-      qb_client.purge_records(self.class.dbid, {query: "{1.OBF.#{purge_date}}"})
+      begin
+        qb_client.purge_records(self.class.dbid, {query: "{1.OBF.#{purge_date}}"})
+      rescue StandardError => e
+        text_logger.error("--- FAILED TO PURGE OLD RECORDS ---")
+        text_logger.error(err)
+        text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
+        raise err
+      end
     end
 
     private
@@ -79,7 +86,7 @@ module QuickbaseLogger
       begin
         save
       rescue StandardError => err
-        text_logger.error("-- COULD NOT WRITE SUCCESS TO QUICKBASE --")
+        text_logger.error("--- COULD NOT WRITE SUCCESS TO QUICKBASE ---")
         text_logger.error(err)
         text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
         raise err
@@ -97,7 +104,7 @@ module QuickbaseLogger
       begin
         save
       rescue StandardError => err
-        text_logger.error("-- COULD NOT WRITE FAILURE TO QUICKBASE --")
+        text_logger.error("--- COULD NOT WRITE FAILURE TO QUICKBASE ---")
         text_logger.error(err)
         text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
         raise err
