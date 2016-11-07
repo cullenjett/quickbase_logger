@@ -19,16 +19,14 @@ end
 
 RSpec.describe QuickbaseLogger::Logger do
   describe '.initialize' do
-    before do
-      @logger = QuickbaseLogger::Logger.new(related_script: 123)
-    end
-
     it "defines a parent script that all log records will be related to" do
-      expect(@logger.related_script).to eq(123)
+      logger = QuickbaseLogger::Logger.new(related_script: 123)
+      expect(logger.related_script).to eq(123)
     end
 
     it "sets a default purge_frequency of 180 days" do
-      expect(@logger.purge_frequency).to eq(180)
+      logger = QuickbaseLogger::Logger.new(related_script: 123)
+      expect(logger.purge_frequency).to eq(180)
     end
   end
 

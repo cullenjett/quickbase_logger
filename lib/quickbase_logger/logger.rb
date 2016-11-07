@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module QuickbaseLogger
   class Logger
     include QuickbaseRecord::Model
@@ -12,6 +14,11 @@ module QuickbaseLogger
       @purge_frequency = options.fetch(:purge_frequency, 180)
 
       file_name = options.fetch(:file_name, 'quickbase_logger_default')
+
+      if !File.directory?(formatted_logger_path)
+        FileUtils::mkdir_p(formatted_logger_path)
+      end
+
       @text_logger = ::Logger.new("#{formatted_logger_path}#{file_name}.log", "monthly") # standard ruby Logger instance
       @text_logger.info("===== #{Date.today.strftime('%m/%d/%Y')} =====")
       @text_logger.info("START")
@@ -54,7 +61,7 @@ module QuickbaseLogger
 
       begin
         qb_client.purge_records(self.class.dbid, {query: "{#{related_script_fid}.EX.#{related_script}}AND{1.OBF.#{purge_date}}"})
-      rescue StandardError => e
+      rescue StandardError => err
         text_logger.error("--- FAILED TO PURGE OLD RECORDS ---")
         text_logger.error(err)
         text_logger.error("BACKTRACE:\n\t#{err.backtrace.slice(0, 10).join("\n\t")}")
