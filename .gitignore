@@ -8,6 +8,7 @@
 /spec/reports/
 /spec/config.yml
 /tmp/
+spec/log
 *.bundle
 *.so
 *.o

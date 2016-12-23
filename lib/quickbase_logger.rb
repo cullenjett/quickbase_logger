@@ -17,9 +17,14 @@ module QuickbaseLogger
 
     QuickbaseRecord.configure do |config|
       config.realm = configuration.realm
-      config.username = configuration.username
-      config.password = configuration.password
       config.token = configuration.token
+
+      if configuration.username
+        config.username = configuration.username
+        config.password = configuration.password
+      else
+        config.usertoken = configuration.usertoken
+      end
     end
 
     Logger.define_fields(&configuration.fields_definition)

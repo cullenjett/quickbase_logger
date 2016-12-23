@@ -24,9 +24,9 @@ RSpec.describe QuickbaseLogger::Logger do
       expect(logger.related_script).to eq(123)
     end
 
-    it "sets a default purge_frequency of 180 days" do
+    it "sets a default purge_frequency of 30 days" do
       logger = QuickbaseLogger::Logger.new(related_script: 123)
-      expect(logger.purge_frequency).to eq(180)
+      expect(logger.purge_frequency).to eq(30)
     end
   end
 

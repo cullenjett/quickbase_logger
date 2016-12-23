@@ -1,6 +1,6 @@
 module QuickbaseLogger
   class Configuration
-    attr_accessor :realm, :username, :password, :token, :logger_path, :fields_definition
+    attr_accessor :realm, :username, :password, :token, :usertoken, :logger_path, :fields_definition
 
     def initialize
     end

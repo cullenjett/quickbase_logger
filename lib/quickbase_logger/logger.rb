@@ -11,7 +11,7 @@ module QuickbaseLogger
 
       @log = []
       @start = "#{formatted_date} #{formatted_time}"
-      @purge_frequency = options.fetch(:purge_frequency, 180)
+      @purge_frequency = options.fetch(:purge_frequency, 30)
 
       file_name = options.fetch(:file_name, 'quickbase_logger_default')
 
